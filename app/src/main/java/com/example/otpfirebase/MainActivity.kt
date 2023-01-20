@@ -3,10 +3,11 @@ package com.example.otpfirebase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.example.otpfirebase.databinding.ActivityMainBinding
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-
+    private lateinit var auth: FirebaseAuth
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -14,4 +15,14 @@ class MainActivity : AppCompatActivity() {
 
 
     }
+
+/*
+    override fun onStart() {
+        super.onStart()
+        if (auth.currentUser != null)
+            Toast.makeText(applicationContext, "User not Authenticated", Toast.LENGTH_SHORT).show()
+    }
+*/
+
+
 }

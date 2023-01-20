@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.example.otpfirebase.R
 import com.example.otpfirebase.databinding.FragmentFirstBinding
 import com.google.firebase.FirebaseException
@@ -25,30 +26,28 @@ class FirstFragment : Fragment() {
         binding = FragmentFirstBinding.inflate(layoutInflater, container, false)
         val auth = Firebase.auth
 
+
         binding.btnSendOtp.setOnClickListener {
             val countryPicker = binding.tilMobile.prefixText.toString()
             val number = binding.edtMobile.text.toString()
             val mobileNumber = "$countryPicker$number"
             val options = PhoneAuthOptions.newBuilder(auth)
                 .setPhoneNumber(mobileNumber)       // Phone number to verify
-                .setTimeout(10L, TimeUnit.SECONDS) // Timeout and unit
+                .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
                 .setActivity(requireActivity())                 // Activity (for callback binding)
-                .setCallbacks(callbacks())          // OnVerificationStateChangedCallbacks
+                .setCallbacks(callbacks)          // OnVerificationStateChangedCallbacks
                 .build()
             PhoneAuthProvider.verifyPhoneNumber(options)
         }
 
 
-
-
         return binding.root
     }
 
-    private fun callbacks() = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+    private val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
         override fun onVerificationCompleted(credential: PhoneAuthCredential) {
             signInWithPhoneAuthCredential(credential)
-
         }
 
         override fun onVerificationFailed(e: FirebaseException) {
@@ -69,19 +68,18 @@ class FirstFragment : Fragment() {
             verificationId: String,
             token: PhoneAuthProvider.ForceResendingToken
         ) {
+            val bundle = Bundle()
+            val secondFragment = SecondFragment()
+            val mobile = binding.tilMobile.prefixText.toString() + binding.edtMobile.text.toString()
+            bundle.putString("verificationId", verificationId)
+            bundle.putString("resendToken", token.toString())
+            bundle.putString("mobile", mobile)
+            secondFragment.arguments = bundle
+
             requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.fragContainer, SecondFragment())
+                .replace(R.id.fragContainer, secondFragment)
                 .addToBackStack("log")
                 .commit()
-
-            // The SMS verification code has been sent to the provided phone number, we
-            // now need to ask the user to enter the code and then construct a credential
-            // by combining the code with a verification ID.
-            Log.d("TAG", "onCodeSent:$verificationId")
-
-            // Save verification ID and resending token so we can use them later
-//            storedVerificationId = verificationId
-//            resendToken = token
         }
     }
 
@@ -103,6 +101,5 @@ class FirstFragment : Fragment() {
                 }
             }
     }
-
 
 }

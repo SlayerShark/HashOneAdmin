@@ -28,6 +28,7 @@
             android:inputType="phone"
             android:maxLength="10"
             android:hint="Mobile"
+            android:text="9810058273"
             android:textCursorDrawable="@drawable/cursor_color"/>
     </com.google.android.material.textfield.TextInputLayout>
 
